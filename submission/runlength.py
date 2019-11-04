@@ -4,11 +4,16 @@ import sys
 import math
 import os
 import shutil
+import matplotlib.pyplot as plt
+from sewar.full_ref import psnr,mse,rmse
 
 def prepare():
 	if os.path.exists('output'):
 		shutil.rmtree('output/')
 	os.makedirs('output')
+
+# arr=[[],[],[],[],[],[]]
+ratios=[]
 
 
 def main():
@@ -18,6 +23,7 @@ def main():
 	original_file_name=sys.argv[1]
 	original_file_object=cv2.imread(original_file_name)
 	original_file_object=cv2.cvtColor(original_file_object, cv2.COLOR_BGR2RGB)
+	original_file_size=original_file_object.shape[0]*original_file_object.shape[1]*original_file_object.shape[2]
 	# original_file_object=cv2.resize(original_file_object,(512, 512))
 
 	r,g,b=cv2.split(original_file_object)
@@ -112,8 +118,12 @@ def main():
 
 	# print(r)
 	# print(final_r)
+	# final_size=len(final_r)+len(final_g)+len(final_b)
+	# print(final_size)
+	# print(original_file_size)
+	ratio=original_file_size/count
+	# ratios.append(ratio)
 
-	# print(count)
 
 	recon_r=[]
 	recon_g=[]
@@ -162,35 +172,19 @@ def main():
 	# print(nrecon_b.shape)
 	# print(nrecon_g.shape)
 
+	file2=original_file_name.split('.')[1]
+
+
 	combined=np.dstack((nrecon_r,nrecon_g,nrecon_b))
 	difference=np.dstack((r-nrecon_r,g-nrecon_g,b-nrecon_b))
-	# combined=np.resize(combined,(combined.shape[1],combined.shape[2]))
-	print(combined.shape)
 	combined=cv2.cvtColor(combined,cv2.COLOR_RGB2BGR)
-	cv2.imwrite('/home/singular/img/15.jpg',combined)
-	cv2.imwrite('/home/singular/img/16.jpg',difference)
+	difference=cv2.cvtColor(difference,cv2.COLOR_RGB2BGR)
+	cv2.imwrite('./output/decoded'+'.'+file2,combined)
+	cv2.imwrite('./output/decoded_diff_'+'.'+file2,difference)
 	original_file_object=cv2.cvtColor(original_file_object, cv2.COLOR_RGB2BGR)
-	# cv2.imwrite('/home/singular/img/16.jpg',original_file_object)
 
-
-	# print(r- nrecon_r)
-	# print(np.max(r- nrecon_r))
-	# print(np.min(r- nrecon_r))
-	# # np.savetxt('data.txt',r-nrecon_r)
-	# # print(nrecon_r)
-
-	# # print(b- recon_b)
-	# print(np.max(b- nrecon_b))
-	# print(np.min(b- nrecon_b))
-	# # np.savetxt('data1.txt',b-nrecon_b)
-	# # print(recon_b)
-
-	# # print(g- recon_g)
-	# print(np.max(g- nrecon_g))
-	# print(np.min(g- nrecon_g))
-	# np.savetxt('data2.txt',g-nrecon_g)
-	# print(recon_g)
-
+	print("Ratio")
+	print(ratio)
 	print("MSE")
 	print(mse(original_file_object,combined))
 	print("psnr")
@@ -198,6 +192,26 @@ def main():
 
 
 def __init__():
+	# file_list=['/home/singular/img/lena.png','/home/singular/img/peppers.png','/home/singular/img/1.jpg','/home/singular/img/3.jpg','/home/singular/img/4.jpg']
+
+	# file_list_name=['Lena','Peppers','Mountain','Water','Street']
+	# # file_list=['/home/singular/Desktop/1_1.jpeg']
+	# # file_list_name=['Random']
+	# counter=0
+
+	# for file in file_list:
 	main()
+		# counter=counter+1
+
+	# x=np.arange(1,6,1)
+	# plt.grid(True,axis='y')
+
+	# plt.bar(x, ratios, align='center')
+	# # plt.plot(x,ratios,'o-')
+	# plt.xticks(x, file_list_name)
+	# plt.title("Run Length Encoding(Ratio)")
+	# plt.show()
+
+	# print(ratios)
 
 __init__()

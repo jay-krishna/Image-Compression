@@ -4,6 +4,10 @@ import sys
 import math
 import os
 import shutil
+from sewar.full_ref import psnr,mse,rmse
+import matplotlib.pyplot as plt
+
+arr=[[],[],[],[],[],[]]
 
 def FetchSteps(sample):
 	if (sample[1]==1):
@@ -42,9 +46,14 @@ def main(sample):
 	y,cr_original,cb_original = cv2.split(converted_image)
 
 	steps=FetchSteps(sample)
+
+	
+	# cr_new=np.zeros((a,b))
 	
 	cr_new=cr_original[::steps[0],::steps[1]]
 	cb_new=cb_original[::steps[0],::steps[1]]
+
+	# for 
 
 	compressed_file_size=y.shape[0]*y.shape[1]+cb_new.shape[0]*cb_new.shape[1]+cr_new.shape[0]*cr_new.shape[1]
 	
@@ -89,6 +98,14 @@ def main(sample):
 	cv2.imwrite('./output/decoded_diff_'+add+'.'+file2,difference)
 	ratio=(original_file_size)/compressed_file_size
 	print("Compression Ratio: "+str(ratio))
+	# print("psnr")
+	print("PSNR: "+str(psnr(combined,converted_image)))
+	print("MSE: "+str(mse(combined,converted_image)))
+	print("RMSE: "+str(rmse(combined,converted_image)))
+	# psnrl.append(psnr(combined,converted_image))
+	# rmsl.append(rmse(combined,converted_image))
+	# com.append(ratio)
+	# arr[counter].append(rmse(combined,converted_image))
 	# print(msssim(original_file_object,decoded))
 
 def __init__():
@@ -100,10 +117,48 @@ def __init__():
 		4,4,0
 		4,4,4
 	'''
+	# file_list=['/home/singular/img/lena.png','/home/singular/img/peppers.png','/home/singular/img/1.jpg','/home/singular/img/3.jpg','/home/singular/img/4.jpg']
+
+	# file_list_name=['Lena','Peppers','Mountain','Water','Street']
+
 	prepare()
 	options=[(4,1,0),(4,1,1),(4,2,0),(4,2,2),(4,4,0),(4,4,4)]
+	# x=np.arange(1,7,1)
+	# counter=0
+	# for file in file_list:
 	for o in options:
+		print("*****************")
 		print("Sampling Rate: "+str(o))
 		main(o)
+
+	
+
+	# # plt.subplot(311)
+	# 	plt.plot(x,arr[counter],'o-',label=str(file_list_name[counter]))
+	# 	plt.grid(True)
+	# # plt.show()
+
+
+	# # plt.subplot(312)
+	# # plt.plot(x,rmsl,'^-',label="RMSE")
+	# # plt.grid(True)
+	# # plt.title("Chroma Subsampling")
+	# 	plt.legend(loc='upper right')
+	# 	plt.title("Chroma Subsampling(RMSE)")
+	# 	counter=counter+1
+
+	# 	# plt.ylabel("db")
+
+	# plt.savefig("2.png")
+	# plt.show()
+
+
+	# plt.plot(x,psnrl,'s-',color='r',label="PSNR")
+	# plt.grid(True)
+	# plt.ylabel("db")
+	# plt.title("Chroma Subsampling")
+	# plt.legend(loc='upper left')
+	# plt.savefig("2.png")
+	# plt.show()
 
 __init__()
